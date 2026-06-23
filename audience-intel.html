@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UnderDefense | Audience &amp; Segment Intelligence Diagnostic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Brand Bible v2 */
+  --asphalt:#0A0A0C; --concrete:#15151A; --court:#22222A;
+  --navy:#0D2D5E; --navy-deep:#071A38; --blue:#1B9BD1; --blue-soft:#5BB8E0;
+  --bone:#F4F1EA; --chalk:#D8D4C8;
+  --moss:#7BAA3E; --canopy:#D4FF3D; --terracotta:#C4521F; --hazard:#FF5A1F;
+  --rust:#8B3A1A; --clay:#FFB627; --jet-pink:#FF2D7A; --plum:#5C2D6E;
+  /* semantic mapping for the diagnostic */
+  --bg:var(--asphalt); --surface:var(--concrete); --surface2:#1b1b21;
+  --border:var(--court); --border2:#2e2e38;
+  --t1:var(--bone); --t2:var(--chalk); --t3:#8d8a80;
+  --invest:var(--canopy); --hold:var(--blue); --reduce:var(--clay);
+  --exclude:var(--hazard); --watch:var(--jet-pink);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter',sans-serif; background:var(--bg); color:var(--t1);
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(900px 520px at 82% -5%,rgba(27,155,209,0.12),transparent 60%),radial-gradient(680px 480px at -2% 2%,rgba(212,255,61,0.05),transparent 55%);
+  background-attachment:fixed;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px 90px}
+.mono{font-family:'JetBrains Mono',monospace}
+.sectlabel{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--canopy);margin-bottom:10px}
+h2{font-family:'Archivo Black',sans-serif;font-size:26px;font-weight:400;letter-spacing:-.01em;line-height:1.1;margin-bottom:6px;text-transform:uppercase}
+h2 .sub{display:block;font-family:'Inter',sans-serif;font-size:13px;font-weight:400;color:var(--t2);margin-top:9px;letter-spacing:0;line-height:1.5;text-transform:none}
+section{margin-top:58px}
+
+/* HEADER */
+header{padding:40px 0 30px;border-bottom:1px solid var(--border)}
+.htop{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap}
+.logochip{background:linear-gradient(135deg,var(--navy-deep) 0%,var(--navy) 100%);border-radius:4px;padding:11px 18px;display:inline-flex;align-items:center}
+.logochip .wm{font-family:'Archivo Black',sans-serif;font-size:19px;letter-spacing:-.01em;color:var(--bone);line-height:1;text-transform:uppercase}
+.hmeta{text-align:right;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);letter-spacing:.04em;line-height:1.7}
+.hmeta .conf{display:inline-block;margin-top:7px;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--hazard);border:1px solid var(--hazard);border-radius:3px;padding:3px 9px}
+h1{font-family:'Archivo Black',sans-serif;font-size:34px;font-weight:400;letter-spacing:-.02em;margin-top:26px;line-height:1.05;text-transform:uppercase}
+h1 .accent{color:var(--blue)}
+.tagline{color:var(--t2);font-size:15px;margin-top:14px;max-width:760px}
+.badges{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.badge{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:13px 18px;min-width:150px}
+.badge .n{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--canopy)}
+.badge .l{font-size:11px;color:var(--t2);margin-top:3px;letter-spacing:.02em}
+
+/* CALLOUT / FRAMING */
+.frame{background:linear-gradient(135deg,var(--navy-deep) 0%,var(--navy) 100%);border:1px solid var(--border2);border-left:3px solid var(--blue);border-radius:6px;padding:22px 24px;margin-top:26px}
+.frame h3{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:14px;letter-spacing:.02em;text-transform:uppercase;margin-bottom:9px;color:var(--bone)}
+.frame p{font-size:13.5px;color:var(--chalk);margin-bottom:8px}
+.frame p:last-child{margin-bottom:0}
+.frame strong{color:var(--bone);font-weight:700}
+
+.alert{background:rgba(255,90,31,.08);border:1px solid rgba(255,90,31,.4);border-left:3px solid var(--hazard);border-radius:6px;padding:17px 20px;margin-top:18px}
+.alert .tag{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--hazard);margin-bottom:7px}
+.alert p{font-size:13px;color:var(--t2)}
+.alert strong{color:var(--t1)}
+
+/* STRATEGY NOTE callout (canopy/lime = our direction) */
+.strat{background:rgba(212,255,61,.06);border:1px solid rgba(212,255,61,.32);border-left:3px solid var(--canopy);border-radius:6px;padding:20px 24px;margin-top:20px}
+.strat .tag{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--canopy);margin-bottom:9px;display:flex;align-items:center;gap:9px}
+.strat .tag::before{content:"";width:18px;height:2px;background:var(--canopy);display:inline-block}
+.strat h4{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:14.5px;text-transform:uppercase;letter-spacing:.01em;color:var(--bone);margin-bottom:8px;line-height:1.25}
+.strat p{font-size:13px;color:var(--chalk);margin-bottom:7px}
+.strat p:last-child{margin-bottom:0}
+.strat strong{color:var(--canopy);font-weight:600}
+.strat .pin{color:var(--bone);font-weight:700}
+
+/* HERO STATS */
+.hero{display:flex;flex-wrap:wrap;gap:13px;margin-top:20px}
+.hcard{flex:1 1 calc(20% - 11px);min-width:160px;background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:18px 16px;position:relative;overflow:hidden}
+.hcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent,var(--blue))}
+.hcard .k{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);font-weight:700}
+.hcard .v{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;margin:9px 0 3px;color:var(--accent,var(--t1))}
+.hcard .d{font-size:11.5px;color:var(--t2);line-height:1.4}
+
+/* TABS + TABLE */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:22px 0 14px}
+.tab{background:var(--surface);border:1px solid var(--border);color:var(--t2);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:9px 16px;border-radius:4px;cursor:pointer;transition:.15s}
+.tab:hover{border-color:var(--border2);color:var(--t1)}
+.tab.active{background:var(--blue);border-color:var(--blue);color:var(--asphalt)}
+.tablewrap{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.thint{font-size:11.5px;color:var(--t3);padding:11px 18px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.25)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:right;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);font-weight:700;cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--border2);transition:.12s}
+thead th:first-child{text-align:left}
+thead th:hover{color:var(--canopy)}
+thead th .arr{opacity:.5;font-size:9px;margin-left:3px}
+tbody td{padding:11px 14px;text-align:right;border-bottom:1px solid rgba(255,255,255,.045);white-space:nowrap}
+tbody td:first-child{text-align:left;font-weight:600;color:var(--t1)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:rgba(27,155,209,.06)}
+.clickcell{position:relative}
+.clickbar{position:absolute;left:14px;top:50%;transform:translateY(-50%);height:18px;background:rgba(27,155,209,.18);border-radius:2px;z-index:0}
+.clickcell span{position:relative;z-index:1}
+.mono-cell,tbody td:not(:first-child){font-family:'JetBrains Mono',monospace}
+.note{font-family:'Inter',sans-serif;font-size:11px;color:var(--t3);max-width:230px;white-space:normal;text-align:left;line-height:1.4}
+.ctr-hi{color:var(--canopy);font-weight:700}
+.ctr-lo{color:var(--t2)}
+/* verdict badges */
+.vb{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.08em;padding:3px 9px;border-radius:3px;text-transform:uppercase}
+.v-INVEST{background:rgba(212,255,61,.14);color:var(--canopy);border:1px solid rgba(212,255,61,.45)}
+.v-HOLD{background:rgba(27,155,209,.14);color:var(--blue-soft);border:1px solid rgba(27,155,209,.45)}
+.v-REDUCE{background:rgba(255,182,39,.14);color:var(--clay);border:1px solid rgba(255,182,39,.45)}
+.v-EXCLUDE{background:rgba(255,90,31,.14);color:var(--hazard);border:1px solid rgba(255,90,31,.45)}
+.v-WATCH{background:rgba(255,45,122,.14);color:var(--jet-pink);border:1px solid rgba(255,45,122,.45)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.03em}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:9px;height:9px;border-radius:2px;display:inline-block}
+
+/* INSIGHT CARDS */
+.cards{display:flex;flex-wrap:wrap;gap:15px;margin-top:18px}
+.icard{flex:1 1 calc(50% - 8px);min-width:300px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:20px 22px;border-top:3px solid var(--blue)}
+.icard.opp{border-top-color:var(--canopy)}
+.icard.crit{border-top-color:var(--hazard)}
+.icard.watch{border-top-color:var(--clay)}
+.icard .tg{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px}
+.icard.opp .tg{color:var(--canopy)}
+.icard.crit .tg{color:var(--hazard)}
+.icard.watch .tg{color:var(--clay)}
+.icard h4{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:16px;text-transform:uppercase;letter-spacing:.005em;margin-bottom:9px;line-height:1.2}
+.icard p{font-size:13px;color:var(--t2)}
+.icard .stat{font-family:'JetBrains Mono',monospace;color:var(--canopy);font-weight:700}
+
+/* EFFICIENCY MATRIX */
+.matrix{display:flex;flex-wrap:wrap;gap:13px;margin-top:18px}
+.mcard{flex:1 1 calc(33.333% - 9px);min-width:200px;background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:17px 18px}
+.mcard .dim{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);font-weight:700}
+.mcard .win{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:16px;text-transform:uppercase;margin:8px 0 4px;color:var(--blue)}
+.mcard .st{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--canopy);font-weight:700}
+.mcard .ip{font-size:11.5px;color:var(--t2);margin-top:7px;line-height:1.4}
+
+/* PERSONAS */
+.personas{display:flex;flex-wrap:wrap;gap:16px;margin-top:18px}
+.pcard{flex:1 1 calc(50% - 8px);min-width:300px;background:linear-gradient(160deg,var(--concrete),#0e0e12);border:1px solid var(--border);border-radius:6px;padding:22px 24px}
+.pcard .ptop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px}
+.pcard h4{font-family:'Archivo Black',sans-serif;font-weight:400;font-size:19px;text-transform:uppercase;letter-spacing:-.01em}
+.pcard .role{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue);font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin-bottom:14px}
+.pcard .prow{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.pcard .prow .lab{color:var(--t3)}
+.pcard .prow .val{font-family:'JetBrains Mono',monospace;color:var(--t1);font-weight:500}
+.pcard .act{font-size:12.5px;color:var(--t2);margin-top:13px;line-height:1.5}
+.pcard .act b{color:var(--canopy);font-weight:600}
+
+/* ACTION TABLE */
+.actwrap{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:18px}
+table.act{font-size:13px}
+table.act thead th{text-align:left;cursor:default}
+table.act tbody td{text-align:left;white-space:normal;vertical-align:top;font-family:'Inter',sans-serif}
+table.act tbody td:first-child{font-weight:600}
+.pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:3px 9px;border-radius:3px;text-transform:uppercase}
+.p-INCREASE,.p-SCALE{background:rgba(212,255,61,.14);color:var(--canopy)}
+.p-TEST{background:rgba(255,45,122,.14);color:var(--jet-pink)}
+.p-REDUCE{background:rgba(255,182,39,.14);color:var(--clay)}
+.p-EXCLUDE{background:rgba(255,90,31,.14);color:var(--hazard)}
+.p-FIX{background:rgba(27,155,209,.14);color:var(--blue-soft)}
+
+/* FREQUENCY SECTION */
+.freqwrap{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:18px}
+table.freq tbody td{text-align:right;font-family:'JetBrains Mono',monospace}
+table.freq tbody td:first-child{text-align:left;font-family:'Inter',sans-serif}
+.freqbar-cell{position:relative;min-width:120px}
+.freqbar{height:8px;border-radius:2px;background:var(--moss)}
+.freq-warn .freqbar{background:var(--clay)}
+.freq-bad .freqbar{background:var(--hazard)}
+.freqval{font-family:'JetBrains Mono',monospace;font-weight:700}
+.freq-bad .freqval{color:var(--hazard)}
+.freq-warn .freqval{color:var(--clay)}
+
+/* FOOTER */
+footer{margin-top:64px;padding-top:26px;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);letter-spacing:.02em}
+footer .frow{display:flex;justify-content:space-between;flex-wrap:wrap;gap:18px}
+footer b{color:var(--t2);font-weight:700}
+.internal{margin-top:16px;font-family:'Inter',sans-serif;font-size:11px;color:var(--t3);background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:6px;padding:13px 16px;line-height:1.55}
+
+@media(max-width:920px){
+  .hero{grid-template-columns:repeat(2,1fr)} .cards,.personas{grid-template-columns:1fr}
+  .matrix{grid-template-columns:1fr 1fr} h1{font-size:26px}
+}
+
+/* ---- Intelligence Room shared nav (scoped, no collision with page .tabs/.tab) ---- */
+.ir-nav{position:sticky;top:0;z-index:60;background:rgba(10,10,12,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border2)}
+.ir-nav-row{display:flex;align-items:center;gap:24px;height:62px;max-width:1180px;margin:0 auto;padding:0 28px}
+.ir-brandmark{width:128px;height:30px;background-image:url('data:image/png;base64,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');background-size:contain;background-repeat:no-repeat;background-position:left center;flex:0 0 auto}
+.ir-tabs{display:flex;gap:4px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.ir-tabs::-webkit-scrollbar{display:none}
+.ir-tab{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8A8A95;padding:8px 13px;border-radius:7px;white-space:nowrap;border:1px solid transparent;transition:.15s}
+.ir-tab:hover{color:var(--bone);background:var(--concrete)}
+.ir-tab.active{color:var(--asphalt);background:var(--blue);font-weight:700}
+.ir-tab .ir-n{opacity:.6;margin-right:6px}
+.ir-tab.active .ir-n{opacity:.8}
+</style>
+</head>
+<body>
+<nav class="ir-nav"><div class="ir-nav-row">
+  <a class="ir-brandmark" href="index.html" aria-label="Impactable"></a>
+  <div class="ir-tabs">
+    <a class="ir-tab" href="index.html"><span class="ir-n">01</span>Overview</a>
+    <a class="ir-tab" href="white-space.html"><span class="ir-n">02</span>White Space</a>
+    <a class="ir-tab active" href="audience-intel.html"><span class="ir-n">03</span>Audience Intel</a>
+    <a class="ir-tab" href="targeting.html"><span class="ir-n">04</span>Targeting</a>
+    <a class="ir-tab" href="messaging.html"><span class="ir-n">05</span>Messaging</a>
+    <a class="ir-tab" href="ecosystem.html"><span class="ir-n">06</span>Ecosystem</a>
+    <a class="ir-tab" href="campaign-build.html"><span class="ir-n">07</span>90-Day Build</a>
+  </div>
+</div></nav>
+
+<div class="wrap">
+
+<header>
+  <div class="htop">
+    <div class="logochip"><span class="wm">Impactable</span></div>
+    <div class="hmeta">
+      Prepared by Impactable<br>Strategy &amp; Analytics<br>
+      <span class="conf">Confidential</span>
+    </div>
+  </div>
+  <h1>Audience &amp; Segment Intelligence<br><span class="accent">UnderDefense</span> &mdash; Baseline Diagnostic</h1>
+  <p class="tagline">Who the prior LinkedIn spend actually reached, how efficiently, and what it tells us about where to point the rebuilt engine. Read this as the pre-engagement baseline: it is the evidence behind our targeting direction, not a report on Impactable-managed campaigns.</p>
+  <div class="badges">
+    <div class="badge"><div class="n">$36.5K</div><div class="l">Prior LinkedIn spend analyzed</div></div>
+    <div class="badge"><div class="n">5</div><div class="l">Audience dimensions</div></div>
+    <div class="badge"><div class="n">~58</div><div class="l">Campaigns reviewed</div></div>
+    <div class="badge"><div class="n">621K</div><div class="l">Impressions / 2,385 clicks</div></div>
+  </div>
+</header>
+
+<div class="frame">
+  <h3>How to read this</h3>
+  <p>This diagnostic covers the LinkedIn ad account as it ran <strong>January 1 to June 22, 2026</strong> &mdash; the period <strong>before</strong> Impactable's engagement went live (MSA effective June 3, onboarding June 22). Every number here reflects UnderDefense's own prior targeting decisions: the activity that, in the client's words, "did not provide outcomes."</p>
+  <p>We are presenting it deliberately. The data shows the channel was never the problem. The <strong>targeting</strong> was. The right buyers engaged at two to three times the account average when they were reached; they simply were not the audience that received the budget. That is a fixable problem, and fixing it is exactly what the rebuilt warm-first, ICP-disciplined structure is designed to do.</p>
+</div>
+
+<div class="alert">
+  <div class="tag">Tracking status &mdash; read before efficiency claims</div>
+  <p><strong>On-site conversion tracking is unreliable in this baseline data.</strong> Conversions are platform-reported and last-touch, and privacy-conscious security buyers evade standard pixels (the reason server-side tracking is a Day-1 workstream). Across the period, recorded conversions are too sparse and inconsistent to anchor a cost-per-lead verdict. <strong>The primary efficiency signal used throughout this report is engagement quality (CTR) cross-referenced against ICP fit, not cost-per-conversion.</strong> Closed-loop lead quality becomes measurable once HubSpot and server-side tracking are connected.</p>
+</div>
+
+<!-- HERO -->
+<section>
+  <div class="sectlabel">The headline numbers</div>
+  <h2>Five facts that frame the rebuild</h2>
+  <div class="hero">
+    <div class="hcard" style="--accent:var(--canopy)"><div class="k">Best ICP engagement</div><div class="v">1.11%</div><div class="d">Director of Cyber Security CTR &mdash; 3x account avg. Spend: $306.</div></div>
+    <div class="hcard" style="--accent:var(--canopy)"><div class="k">Economic buyer CTR</div><div class="v">0.99%</div><div class="d">CISO &mdash; the buyer responded. Got $727.</div></div>
+    <div class="hcard" style="--accent:var(--t1)"><div class="k">Account avg CTR</div><div class="v">0.38%</div><div class="d">Blended benchmark across all spend.</div></div>
+    <div class="hcard" style="--accent:var(--clay)"><div class="k">Spend off-ICP size</div><div class="v">30%</div><div class="d">Hit sub-500 companies &mdash; a client-stated no-go.</div></div>
+    <div class="hcard" style="--accent:var(--hazard)"><div class="k">Worst saturation</div><div class="v">17.8x</div><div class="d">Frequency on a 304-person retargeting pool.</div></div>
+  </div>
+</section>
+
+<!-- DIMENSION TABLES -->
+<section>
+  <div class="sectlabel">Segment breakdown</div>
+  <h2>Where the money went, by dimension
+    <span class="sub">Click any column header to sort. Verdicts are engagement-and-fit based (see tracking note). Spend shares are LinkedIn's impression-weighted demographic splits, used as distribution signal, not as the campaign-level dollar total.</span>
+  </h2>
+  <div class="tabs" id="tabs"></div>
+  <div class="tablewrap">
+    <div class="thint" id="thint"></div>
+    <table id="segtable"><thead id="sthead"></thead><tbody id="stbody"></tbody></table>
+  </div>
+  <div class="legend">
+    <span><span class="dot" style="background:#D4FF3D"></span>INVEST &mdash; fund / scale</span>
+    <span><span class="dot" style="background:#1B9BD1"></span>HOLD &mdash; keep, tighten</span>
+    <span><span class="dot" style="background:#FFB627"></span>REDUCE &mdash; trim waste</span>
+    <span><span class="dot" style="background:#FF5A1F"></span>EXCLUDE &mdash; cut / block</span>
+  </div>
+  <div class="strat">
+    <div class="tag">What this means for our strategy</div>
+    <h4>The segment split is the proof behind warm-first, ICP-disciplined targeting</h4>
+    <p>Our stated direction leads with an <strong>80/20 warm-to-cold split</strong> and a tightly defined ICP: security leaders and SecOps directors at 500&ndash;10,000-employee US firms in tech, financial services, and healthcare. This baseline shows why that direction is right, not arbitrary. The prior account inverted it: budget concentrated on generic engineering, broad seniorities, and sub-500 firms, while the actual ICP engaged best on scraps.</p>
+    <p><span class="pin">Direction holds, sharpened:</span> we keep the ICP definition exactly as written and add <strong>campaign-level enforcement</strong> &mdash; seniority and title gating toward security roles, hard sub-500 and military exclusions from Day 1. No change to the thesis; a concrete fix to execution the prior setup never applied.</p>
+  </div>
+</section>
+
+<!-- KEY FINDINGS -->
+<section>
+  <div class="sectlabel">Key findings</div>
+  <h2>What the segments are telling us</h2>
+  <div class="cards">
+    <div class="icard crit">
+      <div class="tg">Critical &mdash; targeting leak</div>
+      <h4>Four of five dollars missed the security buyer</h4>
+      <p>Primary-ICP security executives (CISO, VP Sec, Director of Security) took only <span class="stat">~5%</span> of title-level spend; security practitioners another <span class="stat">~14%</span>. The single largest title bucket was generic engineering / IT at <span class="stat">~21%</span>, and off-ICP roles (sales, marketing, recruiting) absorbed <span class="stat">~16%</span>. The audience that engaged best was never the audience that got funded.</p>
+    </div>
+    <div class="icard crit">
+      <div class="tg">Critical &mdash; firmographic + exclusion leak</div>
+      <h4>30% of spend hit companies they told us to exclude</h4>
+      <p>The brief is explicit: no-go under 500 employees. Yet <span class="stat">30%</span> of size-attributed spend landed at sub-500 firms, roughly half of that at companies of 50 or fewer. Separately, <span class="stat">$1,367</span> reached Military &amp; Protective Services, another stated exclusion. Exclusions were not enforced at the campaign level.</p>
+    </div>
+    <div class="icard opp">
+      <div class="tg">Opportunity &mdash; underfunded winners</div>
+      <h4>The right titles posted the best CTRs on scraps</h4>
+      <p>CISO (<span class="stat">0.99%</span>), Director of Cyber Security (<span class="stat">1.11%</span>), and the Cyber Security Engineer / Analyst / Specialist cluster (<span class="stat">0.62&ndash;0.77%</span>) all beat the <span class="stat">0.38%</span> account average by 1.6&ndash;3x. These are precisely the bottom-up entry roles the strategy targets. Fund them.</p>
+    </div>
+    <div class="icard watch">
+      <div class="tg">Watch &mdash; vertical signal buried</div>
+      <h4>Named verticals barely register; targeting was broad</h4>
+      <p>A large untargeted / "unknown industry" block absorbed <span class="stat">~$16K</span>-equivalent of impressions, while named priority verticals sat at 1&ndash;2% each (Financial Services, Healthcare, Insurance). The account was not segmented by vertical, so vertical-level lead quality was never readable. Our build splits these out.</p>
+    </div>
+  </div>
+  <div class="strat">
+    <div class="tag">What this means for our strategy</div>
+    <h4>Two findings become two of our fastest, most defensible early wins</h4>
+    <p>The targeting leak and the firmographic/exclusion leak are not just diagnoses, they are the <strong>efficiency recovery</strong> we lead the relationship with. Reallocating the ~four-in-five dollars that missed the security buyer, and shutting the ~30% that hit excluded company sizes, frees budget without asking for a dollar more. That is exactly the kind of "spot and minimize waste" move our operating model promises, and it is visible in Month 1.</p>
+    <p><span class="pin">Direction holds, sharpened:</span> the underfunded-winners finding tells us where the freed budget goes &mdash; concentrate on the security titles already proven to engage. The buried-vertical finding validates our plan to <strong>split campaigns by named vertical</strong> (tech / financial services / healthcare) so lead quality finally becomes readable per segment. Both map straight onto the strategy already written.</p>
+  </div>
+</section>
+
+<!-- EFFICIENCY MATRIX -->
+<section>
+  <div class="sectlabel">Efficiency matrix</div>
+  <h2>Best engagement signal per dimension</h2>
+  <div class="matrix">
+    <div class="mcard"><div class="dim">Seniority</div><div class="win">Director / CXO</div><div class="st">economic buyers</div><div class="ip">Highest-fit seniorities. Took just ~22% of spend combined.</div></div>
+    <div class="mcard"><div class="dim">Job title</div><div class="win">Director of Cyber Security</div><div class="st">1.11% CTR</div><div class="ip">Top engagement in the account on $306 of spend.</div></div>
+    <div class="mcard"><div class="dim">Job function</div><div class="win">Information Technology</div><div class="st">0.42% CTR</div><div class="ip">Core ICP function. Where security buyers sit.</div></div>
+    <div class="mcard"><div class="dim">Company size</div><div class="win">501&ndash;10,000</div><div class="st">sweet-spot ICP</div><div class="ip">In-band fit, but only ~14% of spend landed here.</div></div>
+    <div class="mcard"><div class="dim">Industry</div><div class="win">Financial Services</div><div class="st">named vertical</div><div class="ip">Priority vertical, underfunded at ~1% of spend.</div></div>
+    <div class="mcard"><div class="dim">Buyer cluster</div><div class="win">Security practitioners</div><div class="st">0.62&ndash;0.77% CTR</div><div class="ip">Consistent above-average engagement. Entry point.</div></div>
+  </div>
+</section>
+
+<!-- PERSONAS -->
+<section>
+  <div class="sectlabel">Buyer personas</div>
+  <h2>Who to build around
+    <span class="sub">Synthesized from title, seniority, function and industry engagement. Verdicts reflect fit + engagement, pending closed-loop lead data.</span>
+  </h2>
+  <div class="personas">
+    <div class="pcard">
+      <div class="ptop"><h4>The Security Chief</h4><span class="vb v-INVEST">Invest</span></div>
+      <div class="role">Economic buyer &mdash; owns the SecOps / MDR decision</div>
+      <div class="prow"><span class="lab">Titles</span><span class="val">CISO, Dir. of Cyber Security</span></div>
+      <div class="prow"><span class="lab">CTR range</span><span class="val">0.99% &ndash; 1.11%</span></div>
+      <div class="prow"><span class="lab">vs account avg</span><span class="val">2.6x &ndash; 2.9x</span></div>
+      <div class="prow"><span class="lab">Prior spend share</span><span class="val">~5% (starved)</span></div>
+      <div class="act"><b>Action:</b> Make this the funded center of gravity. Founder thought-leadership + named proof (case studies by vertical) into buyer-group audiences. The engagement is already proven; it just needs budget and frequency discipline.</div>
+    </div>
+    <div class="pcard">
+      <div class="ptop"><h4>The Practitioner</h4><span class="vb v-INVEST">Invest</span></div>
+      <div class="role">Operational evaluator &mdash; the bottom-up entry Nick wants</div>
+      <div class="prow"><span class="lab">Titles</span><span class="val">Sec. Engineer / Analyst / Specialist</span></div>
+      <div class="prow"><span class="lab">CTR range</span><span class="val">0.52% &ndash; 0.77%</span></div>
+      <div class="prow"><span class="lab">Combined clicks</span><span class="val">~145</span></div>
+      <div class="prow"><span class="lab">Prior spend share</span><span class="val">~14%</span></div>
+      <div class="act"><b>Action:</b> Run as the volume layer that carries the idea up to the Chief. Practical, checklist-and-template content (SIEM, IR plan, MDR cost) over brand ads. Already above average; scale within ICP company sizes.</div>
+    </div>
+    <div class="pcard">
+      <div class="ptop"><h4>The Sponsor</h4><span class="vb v-HOLD">Hold</span></div>
+      <div class="role">Influencer &mdash; CTO / CIO / CEO, signs off but not the owner</div>
+      <div class="prow"><span class="lab">Titles</span><span class="val">CTO, CIO, CEO, VP</span></div>
+      <div class="prow"><span class="lab">CTR range</span><span class="val">0.28% &ndash; 0.65%</span></div>
+      <div class="prow"><span class="lab">Notable</span><span class="val">CTO = top spend title ($1.8K)</span></div>
+      <div class="prow"><span class="lab">Prior spend share</span><span class="val">~14% (over-weighted)</span></div>
+      <div class="act"><b>Action:</b> Keep for committee coverage but cap. CTO alone was the single largest title spend while engaging below the security roles. Reduce its share and redeploy toward the Chief and Practitioner.</div>
+    </div>
+    <div class="pcard">
+      <div class="ptop"><h4>The Misfire</h4><span class="vb v-REDUCE">Reduce / Exclude</span></div>
+      <div class="role">Off-ICP &mdash; spend that should not have run</div>
+      <div class="prow"><span class="lab">Segments</span><span class="val">Sales/BizDev, sub-500 cos, Military</span></div>
+      <div class="prow"><span class="lab">Off-ICP function spend</span><span class="val">~29%</span></div>
+      <div class="prow"><span class="lab">Sub-500 size spend</span><span class="val">~30%</span></div>
+      <div class="prow"><span class="lab">Excluded-sector spend</span><span class="val">$1,367 Military</span></div>
+      <div class="act"><b>Action:</b> Hard exclusions from Day 1 &mdash; sub-500 employees, military/defense, non-profit, and off-ICP functions. This is the fastest, most visible efficiency recovery and a concrete proof point of disciplined management.</div>
+    </div>
+  </div>
+  <div class="strat">
+    <div class="tag">What this means for our strategy</div>
+    <h4>These four personas are the spine of the campaign architecture</h4>
+    <p>Our strategy calls for a full-funnel build pairing founder thought-leadership at the top with case-study and proof retargeting below. These personas tell us <strong>who sits in each layer</strong>: the Security Chief is the funded center of gravity (founder-led + named proof), the Practitioner is the volume layer that carries the idea upward (practical, checklist content), the Sponsor gets committee coverage but a capped budget, and the Misfire defines the exclusion list.</p>
+    <p><span class="pin">Direction holds, sharpened:</span> no change to the funnel model. The diagnostic simply fills it with evidence-backed audiences instead of assumptions, and reweights spend away from the Sponsor (CTO was the single largest title spend) toward the Chief and Practitioner who actually engaged.</p>
+  </div>
+</section>
+
+<!-- FREQUENCY / PENETRATION -->
+<section>
+  <div class="sectlabel">Saturation analysis</div>
+  <h2>Frequency &amp; penetration on the narrow lists
+    <span class="sub">Last 92 days. Healthy LinkedIn prospecting frequency is ~2&ndash;5x over a flight. The competitor-ABM and retargeting pools were too small to absorb spend without fatiguing the exact buyers they targeted.</span>
+  </h2>
+  <div class="freqwrap">
+    <table class="freq"><thead>
+      <tr><th style="text-align:left">Campaign (narrow-targeted)</th><th>Reached</th><th>Frequency</th><th>Penetration</th><th>Spend</th><th style="text-align:left;padding-left:22px">Read</th></tr>
+    </thead><tbody id="freqbody"></tbody></table>
+  </div>
+  <div class="frame" style="border-left-color:var(--clay);margin-top:16px">
+    <h3>So what</h3>
+    <p>Four campaigns ran at <strong>8&ndash;18x frequency against pools under 1,000 people</strong>. The MDR LinkedIn-page retargeting campaign hit <strong>17.8x frequency on 304 people with 56% penetration</strong> &mdash; more than half that audience saw the same ad roughly eighteen times. In a privacy-sensitive security audience, that is not retargeting, it is fatigue: rising costs and annoyed buyers.</p>
+    <p><strong>Direction:</strong> consolidate the competitor slivers into broader buyer-group campaigns with hard frequency caps, and lead with the far larger warm pools (~11&ndash;12K parked leads, open-opportunity committees) that can actually absorb spend. A weekly penetration / frequency check becomes a standing optimization on this account, because the prior instinct was to over-narrow.</p>
+  </div>
+</section>
+
+<!-- ACTION RECS -->
+<section>
+  <div class="sectlabel">Recommendations</div>
+  <h2>What changes in the rebuild
+    <span class="sub">Ranked by impact. Each is a direct response to a finding above and maps to the warm-first strategy already designed.</span>
+  </h2>
+  <div class="actwrap">
+    <table class="act"><thead>
+      <tr><th style="width:13%">Action</th><th style="width:22%">Segment</th><th style="width:37%">Rationale</th><th style="width:28%">Expected impact</th></tr>
+    </thead><tbody id="actbody"></tbody></table>
+  </div>
+</section>
+
+<!-- STRATEGY SYNTHESIS -->
+<section>
+  <div class="sectlabel">How this influences our stated strategy</div>
+  <h2>The data validates the direction. It does not change it.
+    <span class="sub">Read against the strategy already set, this baseline is confirmation, not course-correction. Below: what holds, what sharpens, and the one thing still unmeasured.</span>
+  </h2>
+  <div class="cards">
+    <div class="icard opp">
+      <div class="tg">Confirmed &mdash; warm-first spine</div>
+      <h4>An 80/20 warm-to-cold split is the right call</h4>
+      <p>The prior account ran cold and scattered and fatigued its tiny lists at up to <span class="stat">17.8x</span> frequency. The warm pools (<span class="stat">~11&ndash;12K</span> parked leads and open-opportunity committees) are an order of magnitude larger and can absorb spend without saturation. Leading warm is both lower-risk and faster to a visible win. <strong>No change.</strong></p>
+    </div>
+    <div class="icard opp">
+      <div class="tg">Confirmed &mdash; ICP definition</div>
+      <h4>Security leaders + SecOps at 500&ndash;10K firms is correct</h4>
+      <p>Every dimension points the same way: security titles out-engaged the account average by <span class="stat">1.6&ndash;3x</span>, while sub-500 firms and off-ICP functions drained budget. The ICP we wrote is exactly where the signal is. <strong>No change &mdash; now enforced at the campaign level.</strong></p>
+    </div>
+    <div class="icard watch">
+      <div class="tg">Sharpened &mdash; execution detail</div>
+      <h4>Three concrete additions to the build</h4>
+      <p>(1) Hard exclusions from Day 1 (sub-500, military, non-profit). (2) Frequency caps plus a <strong>weekly penetration check</strong> as a standing optimization, because the prior instinct was to over-narrow. (3) Campaigns split by named vertical so lead quality is readable. None of these alter the thesis; they tighten how we deliver it.</p>
+    </div>
+    <div class="icard crit">
+      <div class="tg">Still unmeasured &mdash; state plainly</div>
+      <h4>Two gaps cap what we can claim today</h4>
+      <p><strong>Google is not connected</strong> through Windsor, so the channel the client said showed life is unmeasured &mdash; half the mandate. And <strong>closed-loop lead quality</strong> (HubSpot + server-side) is not yet live, so every verdict here is engagement-based, not conversion-based. Both are pre-launch items, not strategy changes, but they bound today's confidence and should be named in the room.</p>
+    </div>
+  </div>
+  <div class="strat">
+    <div class="tag">Bottom line for the client conversation</div>
+    <h4>We are not changing the plan. We are showing the receipts behind it.</h4>
+    <p>The strategy UnderDefense signed off on was built on judgment. This diagnostic converts that judgment into evidence: the channel was never the problem, the targeting was, and the fix is the warm-first, ICP-disciplined, exclusion-enforced build already designed. <strong>That is the confident, defensible story to lead with</strong> &mdash; it reframes Impactable from "another agency promising leads" to "the team that already found the leak before spending a dollar."</p>
+    <p><span class="pin">Next to unlock the full picture:</span> connect Google through Windsor and stand up closed-loop tracking, so the next iteration measures both channels on real lead quality rather than engagement proxies.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="frow">
+    <div><b>Client:</b> UnderDefense LLC &nbsp;&bull;&nbsp; <b>Window:</b> Jan 1 &ndash; Jun 22, 2026 &nbsp;&bull;&nbsp; <b>Channel:</b> LinkedIn Ads (baseline)</div>
+    <div><b>Source:</b> Windsor.ai &rarr; LinkedIn (acct 508601155) &nbsp;&bull;&nbsp; impactable.com</div>
+  </div>
+  <div class="internal">
+    <b style="color:var(--clay)">Internal note.</b> This is a baseline diagnostic of the client's pre-engagement account, not a performance report on Impactable-managed campaigns (none had launched in this window). Conversion-level efficiency is withheld because on-site tracking is unreliable for this audience; CTR + ICP fit are used as the engagement signal. Google is not yet connected through Windsor, so this is LinkedIn-only. Closed-loop lead quality (HubSpot + server-side) is the next layer. Demographic spend figures are LinkedIn's impression-weighted splits and are used as distribution shares, not exact dollars; campaign-level media spend for the window is $36,548.
+  </div>
+</footer>
+
+</div>
+
+<script>
+const DATA={"seniority":[{"name":"Senior","impressions":337981,"clicks":1196,"spend":17066,"ctr":0.35,"cpc":14.27,"spend_pct":45.0,"clicks_pct":51.7,"verdict":"HOLD","note":"Mixed pool. Largest spend. Needs title-level control."},{"name":"Entry","impressions":96305,"clicks":496,"spend":6790,"ctr":0.52,"cpc":13.69,"spend_pct":17.9,"clicks_pct":21.4,"verdict":"REDUCE","note":"18% of spend on non-decision-makers."},{"name":"Manager","impressions":56488,"clicks":195,"spend":3415,"ctr":0.35,"cpc":17.51,"spend_pct":9.0,"clicks_pct":8.4,"verdict":"HOLD","note":"Operational evaluator. Bottom-up entry point."},{"name":"Director","impressions":40583,"clicks":145,"spend":3096,"ctr":0.36,"cpc":21.36,"spend_pct":8.2,"clicks_pct":6.3,"verdict":"INVEST","note":"Economic buyer. Underfunded relative to fit."},{"name":"CXO","impressions":23331,"clicks":119,"spend":3550,"ctr":0.51,"cpc":29.83,"spend_pct":9.4,"clicks_pct":5.1,"verdict":"INVEST","note":"Economic buyer. Underfunded relative to fit."},{"name":"VP","impressions":22321,"clicks":63,"spend":1621,"ctr":0.28,"cpc":25.73,"spend_pct":4.3,"clicks_pct":2.7,"verdict":"INVEST","note":"Economic buyer. Underfunded relative to fit."},{"name":"Owner","impressions":11749,"clicks":63,"spend":1597,"ctr":0.54,"cpc":25.35,"spend_pct":4.2,"clicks_pct":2.7,"verdict":"REDUCE","note":"Small-firm signal. Off firmographic ICP."},{"name":"Partner","impressions":6780,"clicks":33,"spend":733,"ctr":0.49,"cpc":22.2,"spend_pct":1.9,"clicks_pct":1.4,"verdict":"REDUCE","note":"Small-firm signal. Off firmographic ICP."},{"name":"Training","impressions":1025,"clicks":0,"spend":0,"ctr":0.0,"cpc":0,"spend_pct":0.0,"clicks_pct":0.0,"verdict":"EXCLUDE","note":"Near-zero volume, no buyer value."},{"name":"Unpaid","impressions":556,"clicks":5,"spend":32,"ctr":0.9,"cpc":6.35,"spend_pct":0.1,"clicks_pct":0.2,"verdict":"EXCLUDE","note":"Near-zero volume, no buyer value."}],"function":[{"name":"Information Technology","impressions":207503,"clicks":862,"spend":15973,"ctr":0.42,"cpc":18.53,"spend_pct":38.8,"clicks_pct":34.6,"verdict":"INVEST","note":"Core ICP. Security buyers live here."},{"name":"Engineering","impressions":155653,"clicks":511,"spend":8992,"ctr":0.33,"cpc":17.6,"spend_pct":21.8,"clicks_pct":20.5,"verdict":"HOLD","note":"Adjacent. Tighten to security titles within."},{"name":"Sales","impressions":65125,"clicks":327,"spend":3264,"ctr":0.5,"cpc":9.98,"spend_pct":7.9,"clicks_pct":13.1,"verdict":"REDUCE","note":"Off-ICP function. Tighten targeting/exclusions."},{"name":"Operations","impressions":35631,"clicks":109,"spend":1578,"ctr":0.31,"cpc":14.47,"spend_pct":3.8,"clicks_pct":4.4,"verdict":"HOLD","note":""},{"name":"Business Development","impressions":30689,"clicks":142,"spend":3026,"ctr":0.46,"cpc":21.31,"spend_pct":7.3,"clicks_pct":5.7,"verdict":"REDUCE","note":"Off-ICP function. Tighten targeting/exclusions."},{"name":"Finance","impressions":18494,"clicks":43,"spend":772,"ctr":0.23,"cpc":17.95,"spend_pct":1.9,"clicks_pct":1.7,"verdict":"REDUCE","note":"Off-ICP function. Tighten targeting/exclusions."},{"name":"Military & Protective Services","impressions":16858,"clicks":77,"spend":1367,"ctr":0.46,"cpc":17.75,"spend_pct":3.3,"clicks_pct":3.1,"verdict":"EXCLUDE","note":"Client-stated exclusion. Should be zero."},{"name":"Customer Success & Support","impressions":9666,"clicks":42,"spend":582,"ctr":0.43,"cpc":13.86,"spend_pct":1.4,"clicks_pct":1.7,"verdict":"HOLD","note":""},{"name":"Education","impressions":9231,"clicks":43,"spend":703,"ctr":0.47,"cpc":16.35,"spend_pct":1.7,"clicks_pct":1.7,"verdict":"REDUCE","note":"Off-ICP function. Tighten targeting/exclusions."},{"name":"Program & Project Mgmt","impressions":9094,"clicks":43,"spend":653,"ctr":0.47,"cpc":15.19,"spend_pct":1.6,"clicks_pct":1.7,"verdict":"HOLD","note":""},{"name":"Consulting","impressions":8244,"clicks":54,"spend":638,"ctr":0.66,"cpc":11.82,"spend_pct":1.5,"clicks_pct":2.2,"verdict":"HOLD","note":""},{"name":"Administrative","impressions":7428,"clicks":25,"spend":320,"ctr":0.34,"cpc":12.79,"spend_pct":0.8,"clicks_pct":1.0,"verdict":"REDUCE","note":"Off-ICP function. Tighten targeting/exclusions."},{"name":"Community & Social Services","impressions":6686,"clicks":41,"spend":523,"ctr":0.61,"cpc":12.76,"spend_pct":1.3,"clicks_pct":1.6,"verdict":"REDUCE","note":"Off-ICP function. Tighten targeting/exclusions."},{"name":"Legal","impressions":5762,"clicks":13,"spend":279,"ctr":0.23,"cpc":21.48,"spend_pct":0.7,"clicks_pct":0.5,"verdict":"REDUCE","note":"Off-ICP function. Tighten targeting/exclusions."},{"name":"Arts & Design","impressions":5727,"clicks":27,"spend":459,"ctr":0.47,"cpc":17.0,"spend_pct":1.1,"clicks_pct":1.1,"verdict":"REDUCE","note":"Off-ICP function. Tighten targeting/exclusions."},{"name":"Accounting","impressions":5399,"clicks":12,"spend":182,"ctr":0.22,"cpc":15.18,"spend_pct":0.4,"clicks_pct":0.5,"verdict":"REDUCE","note":"Off-ICP function. Tighten targeting/exclusions."},{"name":"Human Resources","impressions":5379,"clicks":26,"spend":353,"ctr":0.48,"cpc":13.56,"spend_pct":0.9,"clicks_pct":1.0,"verdict":"REDUCE","note":"Off-ICP function. Tighten targeting/exclusions."},{"name":"Research","impressions":5075,"clicks":24,"spend":358,"ctr":0.47,"cpc":14.93,"spend_pct":0.9,"clicks_pct":1.0,"verdict":"HOLD","note":""},{"name":"Media & Communication","impressions":4931,"clicks":22,"spend":356,"ctr":0.45,"cpc":16.18,"spend_pct":0.9,"clicks_pct":0.9,"verdict":"REDUCE","note":"Off-ICP function. Tighten targeting/exclusions."},{"name":"Healthcare Services","impressions":4415,"clicks":17,"spend":228,"ctr":0.39,"cpc":13.42,"spend_pct":0.6,"clicks_pct":0.7,"verdict":"REDUCE","note":"Off-ICP function. Tighten targeting/exclusions."},{"name":"Marketing","impressions":2885,"clicks":13,"spend":294,"ctr":0.45,"cpc":22.6,"spend_pct":0.7,"clicks_pct":0.5,"verdict":"REDUCE","note":"Off-ICP function. Tighten targeting/exclusions."},{"name":"Product Management","impressions":3187,"clicks":17,"spend":278,"ctr":0.53,"cpc":16.33,"spend_pct":0.7,"clicks_pct":0.7,"verdict":"HOLD","note":""}],"size":[{"name":"10,001+","impressions":232567,"clicks":857,"spend":13267,"ctr":0.37,"cpc":15.48,"spend_pct":35.8,"clicks_pct":37.5,"verdict":"HOLD","note":"Good-fit large enterprise. Watch quality."},{"name":"1,001-5,000","impressions":111366,"clicks":465,"spend":7132,"ctr":0.42,"cpc":15.34,"spend_pct":19.3,"clicks_pct":20.3,"verdict":"INVEST","note":"Sweet-spot ICP (500-10K)."},{"name":"201-500","impressions":59922,"clicks":230,"spend":3501,"ctr":0.38,"cpc":15.22,"spend_pct":9.5,"clicks_pct":10.1,"verdict":"EXCLUDE","note":"Sub-500: client-stated NO-GO."},{"name":"501-1,000","impressions":49917,"clicks":170,"spend":2983,"ctr":0.34,"cpc":17.55,"spend_pct":8.1,"clicks_pct":7.4,"verdict":"INVEST","note":"Sweet-spot ICP (500-10K)."},{"name":"5,001-10,000","impressions":45046,"clicks":191,"spend":2397,"ctr":0.42,"cpc":12.55,"spend_pct":6.5,"clicks_pct":8.4,"verdict":"INVEST","note":"Sweet-spot ICP (500-10K)."},{"name":"51-200","impressions":30184,"clicks":125,"spend":2370,"ctr":0.41,"cpc":18.96,"spend_pct":6.4,"clicks_pct":5.5,"verdict":"EXCLUDE","note":"Sub-500: client-stated NO-GO."},{"name":"11-50","impressions":23992,"clicks":119,"spend":2450,"ctr":0.5,"cpc":20.59,"spend_pct":6.6,"clicks_pct":5.2,"verdict":"EXCLUDE","note":"Sub-500: client-stated NO-GO."},{"name":"2-10","impressions":23380,"clicks":111,"spend":2470,"ctr":0.47,"cpc":22.25,"spend_pct":6.7,"clicks_pct":4.9,"verdict":"EXCLUDE","note":"Sub-500: client-stated NO-GO."},{"name":"1","impressions":4244,"clicks":18,"spend":440,"ctr":0.42,"cpc":24.43,"spend_pct":1.2,"clicks_pct":0.8,"verdict":"EXCLUDE","note":"Sub-500: client-stated NO-GO."}],"industry":[{"name":"Internet","impressions":383472,"clicks":1449,"spend":23477,"ctr":0.38,"cpc":16.2,"spend_pct":28.2,"clicks_pct":27.6,"verdict":"HOLD","note":"Broad tech. Segment to named verticals."},{"name":"Information Technology & Services","impressions":349882,"clicks":1510,"spend":23137,"ctr":0.43,"cpc":15.32,"spend_pct":27.8,"clicks_pct":28.8,"verdict":"HOLD","note":"Broad tech. Segment to named verticals."},{"name":"Management Consulting","impressions":76406,"clicks":302,"spend":4594,"ctr":0.4,"cpc":15.21,"spend_pct":5.5,"clicks_pct":5.8,"verdict":"REDUCE","note":"Outside priority verticals."},{"name":"(Unknown / untargeted)","impressions":289247,"clicks":994,"spend":15909,"ctr":0.34,"cpc":16.01,"spend_pct":19.1,"clicks_pct":19.0,"verdict":"REDUCE","note":"Untargeted spill. Tighten audience definition."},{"name":"Financial Services","impressions":31142,"clicks":113,"spend":1944,"ctr":0.36,"cpc":17.2,"spend_pct":2.3,"clicks_pct":2.2,"verdict":"INVEST","note":"Named priority vertical. Underfunded."},{"name":"Hospital & Health Care","impressions":30056,"clicks":114,"spend":1754,"ctr":0.38,"cpc":15.39,"spend_pct":2.1,"clicks_pct":2.2,"verdict":"INVEST","note":"Named priority vertical. Underfunded."},{"name":"Capital Markets","impressions":23595,"clicks":86,"spend":1618,"ctr":0.36,"cpc":18.82,"spend_pct":1.9,"clicks_pct":1.6,"verdict":"INVEST","note":"Named priority vertical. Underfunded."},{"name":"Consumer Electronics","impressions":31999,"clicks":130,"spend":1855,"ctr":0.41,"cpc":14.27,"spend_pct":2.2,"clicks_pct":2.5,"verdict":"REDUCE","note":"Outside priority verticals."},{"name":"Accounting","impressions":20598,"clicks":76,"spend":1161,"ctr":0.37,"cpc":15.27,"spend_pct":1.4,"clicks_pct":1.4,"verdict":"REDUCE","note":"Outside priority verticals."},{"name":"Higher Education","impressions":19619,"clicks":75,"spend":1215,"ctr":0.38,"cpc":16.2,"spend_pct":1.5,"clicks_pct":1.4,"verdict":"REDUCE","note":"Outside priority verticals."},{"name":"Insurance","impressions":19315,"clicks":45,"spend":853,"ctr":0.23,"cpc":18.96,"spend_pct":1.0,"clicks_pct":0.9,"verdict":"INVEST","note":"Named priority vertical. Underfunded."},{"name":"Marketing & Advertising","impressions":19242,"clicks":68,"spend":1204,"ctr":0.35,"cpc":17.7,"spend_pct":1.4,"clicks_pct":1.3,"verdict":"REDUCE","note":"Outside priority verticals."},{"name":"Non-profit Organization Mgmt","impressions":17988,"clicks":60,"spend":1054,"ctr":0.33,"cpc":17.57,"spend_pct":1.3,"clicks_pct":1.1,"verdict":"EXCLUDE","note":"Off-ICP / excluded sector."},{"name":"Government Administration","impressions":17417,"clicks":53,"spend":951,"ctr":0.3,"cpc":17.94,"spend_pct":1.1,"clicks_pct":1.0,"verdict":"EXCLUDE","note":"Off-ICP / excluded sector."},{"name":"Security & Investigations","impressions":13008,"clicks":56,"spend":866,"ctr":0.43,"cpc":15.47,"spend_pct":1.0,"clicks_pct":1.1,"verdict":"HOLD","note":""},{"name":"Staffing & Recruiting","impressions":11613,"clicks":63,"spend":737,"ctr":0.54,"cpc":11.69,"spend_pct":0.9,"clicks_pct":1.2,"verdict":"REDUCE","note":"Outside priority verticals."},{"name":"Legal Services","impressions":15219,"clicks":49,"spend":923,"ctr":0.32,"cpc":18.83,"spend_pct":1.1,"clicks_pct":0.9,"verdict":"REDUCE","note":"Outside priority verticals."}],"title":[{"name":"Chief Technology Officer","impressions":10729,"clicks":43,"spend":1792,"ctr":0.4,"cpc":41.68,"spend_pct":16.2,"clicks_pct":7.4,"verdict":"HOLD","note":"Sponsor/influencer. Useful but not buyer. Cap spend."},{"name":"Founder","impressions":5866,"clicks":30,"spend":777,"ctr":0.51,"cpc":25.9,"spend_pct":7.0,"clicks_pct":5.2,"verdict":"REDUCE","note":"Small-company signal. Off firmographic ICP."},{"name":"Software Engineer","impressions":11059,"clicks":50,"spend":765,"ctr":0.45,"cpc":15.31,"spend_pct":6.9,"clicks_pct":8.7,"verdict":"REDUCE","note":"Generic eng/IT. Overfunded vs fit."},{"name":"Co-Founder","impressions":4448,"clicks":23,"spend":744,"ctr":0.52,"cpc":32.35,"spend_pct":6.7,"clicks_pct":4.0,"verdict":"REDUCE","note":"Small-company signal. Off firmographic ICP."},{"name":"Chief Information Security Officer","impressions":3129,"clicks":31,"spend":727,"ctr":0.99,"cpc":23.45,"spend_pct":6.6,"clicks_pct":5.4,"verdict":"INVEST","note":"Primary ICP. Top CTR, starved of budget."},{"name":"Senior Software Engineer","impressions":14948,"clicks":38,"spend":640,"ctr":0.25,"cpc":16.84,"spend_pct":5.8,"clicks_pct":6.6,"verdict":"REDUCE","note":"Generic eng/IT. Overfunded vs fit."},{"name":"Chief Information Officer","impressions":2938,"clicks":16,"spend":606,"ctr":0.54,"cpc":37.88,"spend_pct":5.5,"clicks_pct":2.8,"verdict":"HOLD","note":"Sponsor/influencer. Useful but not buyer. Cap spend."},{"name":"Cyber Security Engineer","impressions":6767,"clicks":52,"spend":556,"ctr":0.77,"cpc":10.69,"spend_pct":5.0,"clicks_pct":9.0,"verdict":"INVEST","note":"Security practitioner. Above-avg CTR. Bottom-up entry."},{"name":"Cyber Security Analyst","impressions":6469,"clicks":40,"spend":528,"ctr":0.62,"cpc":13.2,"spend_pct":4.8,"clicks_pct":6.9,"verdict":"INVEST","note":"Security practitioner. Above-avg CTR. Bottom-up entry."},{"name":"Cyber Security Specialist","impressions":5207,"clicks":38,"spend":522,"ctr":0.73,"cpc":13.74,"spend_pct":4.7,"clicks_pct":6.6,"verdict":"INVEST","note":"Security practitioner. Above-avg CTR. Bottom-up entry."},{"name":"Senior Manager","impressions":9301,"clicks":35,"spend":510,"ctr":0.38,"cpc":14.58,"spend_pct":4.6,"clicks_pct":6.1,"verdict":"REDUCE","note":"Generic eng/IT. Overfunded vs fit."},{"name":"Chief Executive Officer","impressions":3385,"clicks":22,"spend":485,"ctr":0.65,"cpc":22.05,"spend_pct":4.4,"clicks_pct":3.8,"verdict":"HOLD","note":"Sponsor/influencer. Useful but not buyer. Cap spend."},{"name":"Manager","impressions":7098,"clicks":19,"spend":379,"ctr":0.27,"cpc":19.94,"spend_pct":3.4,"clicks_pct":3.3,"verdict":"REDUCE","note":"Generic eng/IT. Overfunded vs fit."},{"name":"Senior Solutions Architect","impressions":5514,"clicks":21,"spend":355,"ctr":0.38,"cpc":16.9,"spend_pct":3.2,"clicks_pct":3.6,"verdict":"REDUCE","note":"Generic eng/IT. Overfunded vs fit."},{"name":"Account Executive","impressions":7414,"clicks":39,"spend":354,"ctr":0.53,"cpc":9.07,"spend_pct":3.2,"clicks_pct":6.7,"verdict":"EXCLUDE","note":"Sales role. Off-ICP."},{"name":"Director of Cyber Security","impressions":2157,"clicks":24,"spend":306,"ctr":1.11,"cpc":12.75,"spend_pct":2.8,"clicks_pct":4.2,"verdict":"INVEST","note":"Primary ICP. Top CTR, starved of budget."},{"name":"Information Technology Specialist","impressions":6192,"clicks":12,"spend":273,"ctr":0.19,"cpc":22.75,"spend_pct":2.5,"clicks_pct":2.1,"verdict":"REDUCE","note":"Generic eng/IT. Overfunded vs fit."},{"name":"Security Engineer","impressions":2908,"clicks":15,"spend":240,"ctr":0.52,"cpc":16.0,"spend_pct":2.2,"clicks_pct":2.6,"verdict":"INVEST","note":"Security practitioner. Above-avg CTR. Bottom-up entry."},{"name":"Vice President","impressions":5322,"clicks":15,"spend":252,"ctr":0.28,"cpc":16.8,"spend_pct":2.3,"clicks_pct":2.6,"verdict":"HOLD","note":"Sponsor/influencer. Useful but not buyer. Cap spend."},{"name":"Solutions Architect","impressions":5078,"clicks":15,"spend":264,"ctr":0.3,"cpc":17.6,"spend_pct":2.4,"clicks_pct":2.6,"verdict":"REDUCE","note":"Generic eng/IT. Overfunded vs fit."}]};
+const TOT={"seniority":{"spend":37900,"clicks":2315,"impressions":597119},"function":{"spend":41177,"clicks":2490,"impressions":623062},"size":{"spend":37010,"clicks":2286,"impressions":580618},"industry":{"spend":83251,"clicks":5243,"impressions":1369818},"title":{"spend":11075,"clicks":578,"impressions":125929}};
+const ACCT_CTR=0.38;
+
+const TABS=[
+  ["seniority","Seniority"],["title","Job Title"],["function","Job Function"],
+  ["size","Company Size"],["industry","Industry"]
+];
+const HINTS={
+  seniority:"Decision-making level of members reached. ICP buyers = CXO, VP, Director; operational entry = Manager.",
+  title:"Most granular persona signal. Note where the highest CTRs sit versus where the spend sits.",
+  function:"Functional area. Core ICP = Information Technology (security lives here); Engineering is adjacent.",
+  size:"Firmographic fit. Client ICP sweet spot = 500-10,000 employees. Under 500 is a stated no-go.",
+  industry:"Vertical mix. Priority verticals = Financial Services, Healthcare, Technology. Broad/unknown = untargeted spill."
+};
+const COLS=[
+  {k:"name",l:"Segment",fmt:v=>v,bar:false,left:true},
+  {k:"clicks",l:"Clicks",fmt:v=>v.toLocaleString(),bar:true},
+  {k:"clicks_pct",l:"Clk %",fmt:v=>v+"%"},
+  {k:"impressions",l:"Impr",fmt:v=>v.toLocaleString()},
+  {k:"ctr",l:"CTR",fmt:v=>v.toFixed(2)+"%",ctr:true},
+  {k:"cpc",l:"CPC",fmt:v=>"$"+v.toFixed(2)},
+  {k:"spend_pct",l:"Spend %",fmt:v=>v+"%"},
+  {k:"verdict",l:"Verdict",fmt:v=>'<span class="vb v-'+v+'">'+v+'</span>'},
+  {k:"note",l:"Read",fmt:v=>'<span class="note">'+v+'</span>',left:true},
+];
+let cur="seniority", sortK="spend_pct", sortDir=-1;
+
+function renderTabs(){
+  const c=document.getElementById("tabs"); c.innerHTML="";
+  TABS.forEach(([k,l])=>{
+    const b=document.createElement("button");
+    b.className="tab"+(k===cur?" active":""); b.textContent=l;
+    b.onclick=()=>{cur=k;sortK="spend_pct";sortDir=-1;renderTabs();renderTable();};
+    c.appendChild(b);
+  });
+  document.getElementById("thint").textContent=HINTS[cur];
+}
+function renderTable(){
+  const rows=[...DATA[cur]];
+  const maxClicks=Math.max(...rows.map(r=>r.clicks),1);
+  rows.sort((a,b)=>{
+    let av=a[sortK],bv=b[sortK];
+    if(typeof av==="string"){return sortDir*av.localeCompare(bv);}
+    return sortDir*(av-bv);
+  });
+  const th=document.getElementById("sthead");
+  th.innerHTML="<tr>"+COLS.map(c=>{
+    const arr=sortK===c.k?(sortDir<0?" \u25BC":" \u25B2"):"";
+    return '<th data-k="'+c.k+'"'+(c.left?' style="text-align:left"':'')+'>'+c.l+'<span class="arr">'+arr+'</span></th>';
+  }).join("")+"</tr>";
+  th.querySelectorAll("th").forEach(t=>{
+    t.onclick=()=>{const k=t.dataset.k; if(sortK===k){sortDir*=-1;}else{sortK=k;sortDir=(k==="name")?1:-1;} renderTable();};
+  });
+  const tb=document.getElementById("stbody");
+  tb.innerHTML=rows.map(r=>{
+    return "<tr>"+COLS.map(c=>{
+      let val=c.fmt(r[c.k]);
+      if(c.bar){
+        const w=(r.clicks/maxClicks*100).toFixed(1);
+        return '<td class="clickcell"><span class="clickbar" style="width:'+w+'%"></span><span>'+val+'</span></td>';
+      }
+      if(c.ctr){
+        const cls=r.ctr>=ACCT_CTR?"ctr-hi":"ctr-lo";
+        return '<td class="'+cls+'">'+val+'</td>';
+      }
+      return "<td"+(c.left?' style="text-align:left"':'')+">"+val+"</td>";
+    }).join("")+"</tr>";
+  }).join("");
+}
+
+// Frequency data
+const FREQ=[
+  ["MDR - LinkedIn page retargeting",304,17.8,56.3,414,"Burned out. 18x on 304 people."],
+  ["On-demand webinar - Competitors' clients",484,13.2,23.0,341,"Tiny pool, heavy repeat."],
+  ["Competitors: Arctic Wolf",311,12.9,16.4,177,"Too small to run standalone."],
+  ["On-demand webinar AI - TOLA",300,11.2,25.0,284,"Fatigue on a 300-person list."],
+  ["Competitors: Alert Logic",349,7.9,14.0,167,"Approaching saturation."],
+  ["MDR - Website retargeting",166,6.5,11.1,86,"Small pool, climbing."],
+  ["Competitors: Reliaquest",873,5.5,11.1,358,"Largest list; healthiest of the set."],
+];
+function renderFreq(){
+  const maxF=18;
+  document.getElementById("freqbody").innerHTML=FREQ.map(([n,reach,freq,pen,sp,read])=>{
+    const cls=freq>=8?"freq-bad":(freq>=5?"freq-warn":"");
+    const w=Math.min(freq/maxF*100,100).toFixed(0);
+    return '<tr class="'+cls+'"><td>'+n+'</td>'+
+      '<td>'+reach.toLocaleString()+'</td>'+
+      '<td class="freqbar-cell"><div class="freqbar" style="width:'+w+'%"></div><span class="freqval">'+freq.toFixed(1)+'x</span></td>'+
+      '<td>'+pen.toFixed(1)+'%</td>'+
+      '<td>$'+sp.toLocaleString()+'</td>'+
+      '<td style="text-align:left;padding-left:22px;color:var(--t2);font-size:12px">'+read+'</td></tr>';
+  }).join("");
+}
+
+// Action recommendations
+const ACTS=[
+  ["INCREASE","Security execs + practitioners","CISO, Dir. Security, Sec. Engineer/Analyst engaged at 1.6-3x account-average CTR on minimal budget.","Concentrate spend on proven-engaging ICP; higher quality at lower waste."],
+  ["EXCLUDE","Sub-500 employee companies","~30% of prior spend hit a client-stated no-go; ~15% at sub-50-person firms.","Recover ~30% of wasted reach; align to ICP from Day 1."],
+  ["EXCLUDE","Military & off-ICP functions","$1,367 reached Military (stated exclusion); ~29% to off-ICP functions (sales, mktg, recruiting).","Eliminate disallowed spend; visible discipline proof point."],
+  ["FIX","Frequency on narrow lists","4 campaigns at 8-18x frequency on sub-1,000 pools; one at 56% penetration.","Stop fatigue; lower CPCs; protect buyer goodwill."],
+  ["SCALE","Warm pools (parked leads, committees)","~11-12K warm ICP leads far exceed the 300-person lists; can absorb spend without saturation.","Fast, defensible early wins; the warm-first spine."],
+  ["TEST","Vertical segmentation","Named verticals (FinServ, Healthcare, Tech) buried at 1-2%; account ran broad/unsegmented.","Readable vertical-level lead quality; sharper creative-to-vertical match."],
+  ["REDUCE","CTO / generic-engineering weight","CTO was the single largest title spend; generic eng/IT was the biggest title bucket (~21%).","Redeploy budget from adjacent roles to the actual buyer."],
+  ["FIX","Conversion tracking","On-site conversions unreliable; privacy-conscious buyers evade pixels.","Closed-loop lead quality; measure real MQLs, not platform proxies."],
+];
+function renderActs(){
+  document.getElementById("actbody").innerHTML=ACTS.map(([a,seg,rat,imp])=>
+    '<tr><td><span class="pill p-'+a+'">'+a+'</span></td><td>'+seg+'</td>'+
+    '<td style="color:var(--t2)">'+rat+'</td><td style="color:var(--t2)">'+imp+'</td></tr>'
+  ).join("");
+}
+
+renderTabs(); renderTable(); renderFreq(); renderActs();
+</script>
+</body>
+</html>
